@@ -1,5 +1,5 @@
 % function alpha = mb_nocLineSearch(f,gradF,x,dir,slope0,of)
-function alpha = mb_nocLineSearch(func, x, d, t0, gamma, rho, sigma)
+function alpha = mb_nocLineSearch(f, x, dir, t0, gamma, rho, sigma)
 
 % implementation of strong wolfe line search
 % 
@@ -18,35 +18,42 @@ function alpha = mb_nocLineSearch(func, x, d, t0, gamma, rho, sigma)
 % oflo
 
 % parameter for sufficient decrease condition
-c1 = 0.001;
+c1 = sigma;
 % parameter for curvature condition
-c2 = 0.1;
+c2 = rho;
 
 if c1 > c2
     error('c1 > c2\n');
 end
 
 alphaMax = 100;
-alpha    = 1;
+alpha    = t0;
 
-alpha_0  = 0;
-alpha_1  = alpha;
+alpha_0  = 0;       %a
+alpha_1  = alpha;   %b
 
-of_x = of;
-of_0 = of;
+
+phi = @(t) f(x+t*dir);
+
+psi = @(t) phi(t)-phi(0)- sigma*t*phi_dot(0);
+
+
+
+of_x = phi(0);
+of_0 = phi(0);
 iter = 0;
 
 while 1
 
     xc     = x+alpha_1*dir;
-    of     = f(xc);
-    slopec = gradF(xc)'*dir;
+    [of gradF] = f(xc);
+    slopec = gradF'*dir;
     
     % check if current iterate violates sufficient decrease
     if  (of > of_0 + slope0*c1*alpha_1) || ((of >= of_x ) && (iter > 0))
         % there has to be an acceptable point between alpha_0 and alpha_1
         % (because c1 > c2)
-        alpha = nocZoom(f,gradF,x,dir,slope0, alpha_0, alpha_1,of_0,of_x ,c1,c2);
+        alpha = nocZoom(f,x,dir,slope0, alpha_0, alpha_1,of_0, of_x ,c1,c2);
         break;
     end
     % current iterate has sufficient decrease, but are we too close?
@@ -58,7 +65,7 @@ while 1
     % are we behind the minimum?
     if (slopec >= 0)
         % there has to be an acceptable point between alpha_0 and alpha_1
-        alpha = nocZoom(f,gradF,x,dir,slope0,alpha_1 , alpha_0,of_0,  of,c1,c2);
+        alpha = nocZoom(f,x,dir,slope0,alpha_1 , alpha_0,of_0,  of,c1,c2);
         break;
     end
 
@@ -102,4 +109,7 @@ end
 
 end
 
-
+function phi_dot_t = phi_dot(t)    
+    [fval fgrad] = f(x+t*d);
+    phi_dot_t = fgrad'*d;    
+end

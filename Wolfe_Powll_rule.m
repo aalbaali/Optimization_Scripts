@@ -1,60 +1,6 @@
 %Implementation of Wolfe-Powell rule from Alg1 in A6.
-function [ti] = Wolfe_Powll_rule(func, x, d, t0, gamma, rho, sigma)
+function [t] = Wolfe_Powll_rule(func, x, d, t0, gamma, rho, sigma)
 
-% phi = @(t) func(x+t*d);
-% 
-% psi = @(t) phi(t)-phi(0)- sigma*t*phi_dot(0);
-% 
-% function phi_dot_t = phi_dot(t)    
-%     [fval fgrad] = func(x+t*d);
-%     phi_dot_t = fgrad'*d;
-% end
-% 
-% ti = t0;
-% t = phaseA(t0);
-% return;
-% 
-%     function t = phaseA(t)
-%         if (psi(ti) >=0)
-%             t = phaseB(0,ti, ti);
-%             return;
-%         else
-%             if (phi_dot(ti) >= rho*phi_dot(0))
-%                 t = ti;
-%                 return;
-%             else
-%                 ti = gamma*ti;
-%                 t = phaseA(ti);
-%                 return;
-%             end
-%         end
-%     end
-% 
-% 
-%     function t = phaseB(a,b,t)
-%     aj = a;
-%     bj = b;
-%     tj = aj+(bj-aj)/2;
-% 
-%         if (psi(tj) < 0)
-%             if (phi_dot(tj) >= rho*phi_dot(0))
-%                 t = tj;%STOP 2
-%                 return;
-%             else
-%                 aj = tj;
-%                 t = phaseB(aj,bj,tj);
-%                 return;
-%             end
-%         else
-%             aj = a;
-%             bj = tj;
-%             t = phaseB(aj,bj,tj);
-%             return;
-%         end
-% 
-%     end
-% 
-% end
 if (t0<=0 || gamma <=1)
     disp('error with the parameters');
     return;

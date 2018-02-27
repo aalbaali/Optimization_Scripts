@@ -14,6 +14,7 @@ while(norm(fgradOld)>epsilon)
     d = -H\fgradOld; %solving the linear system
     
     t = Wolfe_Powll_rule(func, xOld, d, t0, gamma, rho, sigma);
+%     t = mb_nocLineSearch(func, xOld, d, t0, gamma, rho, sigma); %wolfe from online source
     xNew = xOld + t*d;
     s = xNew - xOld;    
    [fval fgradNew] = func(xNew);

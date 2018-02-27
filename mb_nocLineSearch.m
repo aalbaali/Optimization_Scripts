@@ -1,5 +1,8 @@
 % function alpha = mb_nocLineSearch(f,gradF,x,dir,slope0,of)
-function alpha = mb_nocLineSearch(func, x, d, t0, gamma, rho, sigma)
+%This function originally by Mark Bangert from https://www.mathworks.com/matlabcentral/fileexchange/34835-optimization-tutorial?focused=5215429&tab=function
+%Modified by Amro Al Baali
+
+function alpha = mb_nocLineSearch(f, x, dir, t0, gamma, rho, sigma)
 
 % implementation of strong wolfe line search
 % 
@@ -33,12 +36,12 @@ alpha_0  = 0;       %a
 alpha_1  = alpha;   %b
 
 
-phi = @(t) func(x+t*d);
+phi = @(t) f(x+t*dir);
 
 psi = @(t) phi(t)-phi(0)- sigma*t*phi_dot(0);
 
-
-
+phi_dot = @(t) phi_dotXD(t, f, x, dir);
+slope0 = phi_dot(0); 
 of_x = phi(0);
 of_0 = phi(0);
 iter = 0;
@@ -46,14 +49,14 @@ iter = 0;
 while 1
 
     xc     = x+alpha_1*dir;
-    of     = f(xc);
-    slopec = gradF(xc)'*dir;
+    [of gradF] = f(xc);
+    slopec = gradF'*dir;
     
     % check if current iterate violates sufficient decrease
     if  (of > of_0 + slope0*c1*alpha_1) || ((of >= of_x ) && (iter > 0))
         % there has to be an acceptable point between alpha_0 and alpha_1
         % (because c1 > c2)
-        alpha = nocZoom(f,gradF,x,dir,slope0, alpha_0, alpha_1,of_0,of_x ,c1,c2);
+        alpha = nocZoom(f, x, dir, slope0, alpha_0, alpha_1, of_0, of_x , c1, c2);
         break;
     end
     % current iterate has sufficient decrease, but are we too close?
@@ -65,12 +68,13 @@ while 1
     % are we behind the minimum?
     if (slopec >= 0)
         % there has to be an acceptable point between alpha_0 and alpha_1
-        alpha = nocZoom(f,gradF,x,dir,slope0,alpha_1 , alpha_0,of_0,  of,c1,c2);
+        alpha = nocZoom(f, x, dir, slope0, alpha_1, alpha_0, of_0, of, c1, c2);
         break;
     end
 
     alpha_0 = alpha_1;
-    alpha_1 = min(alphaMax, alpha_1*3);
+%     alpha_1 = min(alphaMax, alpha_1*3);
+    alpha_1 = min(alphaMax, alpha_1*gamma);
     of_x = of;
 
     iter = iter + 1;
@@ -78,7 +82,7 @@ end
 
 end
 
-function alpha = nocZoom(f,gradF,x,dir,slope0,alphaLo,alphaHi,of_0,ofLo,c1,c2)
+function alpha = nocZoom(f,x,dir,slope0,alphaLo,alphaHi,of_0,ofLo,c1,c2)
 % this function is only called by mb_nocLineSearch - everything else does
 % not make sense!
 
@@ -86,14 +90,14 @@ while 1
     
     alpha = (alphaLo+alphaHi)/2;
     xc    = x + alpha*dir;
-    of    = f(xc);
+    [of gradF] = f(xc);
     
     if of > of_0 + c1*alpha*slope0 || of >= ofLo
         % if we do not observe sufficient decrease in point alpha, we set
         % the maximum of the feasible interval to alpha
         alphaHi = alpha;       
     else
-        slopec = gradF(xc)'*dir;
+        slopec = gradF'*dir;
         % strong wolfe fullfilled?
         if abs(slopec) <= -c2*slope0
             return;
@@ -109,7 +113,7 @@ end
 
 end
 
-function phi_dot_t = phi_dot(t)    
+function phi_dot_t = phi_dotXD(t, f, x, d)    
     [fval fgrad] = f(x+t*d);
     phi_dot_t = fgrad'*d;    
 end
