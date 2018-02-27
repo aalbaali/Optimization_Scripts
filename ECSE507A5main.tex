@@ -1,0 +1,44 @@
+\hspace{1mm}\textcolor{green}{\%Amro Al Baali }\\ 
+\hspace{1mm}\textcolor{green}{\%Feb 15, 2018 }\\ 
+\hspace{1mm}\textcolor{green}{\%ECSE 507 Assignment 5 }\\ 
+\hspace{1mm} \\ 
+\hspace{1mm}\textcolor{green}{\%Finding the minimum of the Rosenbrock \textcolor{blue}{function} and the Brown \textcolor{blue}{function} }\\ 
+\hspace{1mm}\textcolor{green}{\%using the globalized Newton method }\\ 
+\hspace{1mm}clear all; \\ 
+\hspace{1mm}close all; \\ 
+\hspace{1mm}home; \\ 
+\hspace{1mm} \\ 
+\hspace{1mm}rho = 1e-8; \\ 
+\hspace{1mm}p=2.1; \\ 
+\hspace{1mm}beta = 0.5; \\ 
+\hspace{1mm}sigma = 1e-4; \\ 
+\hspace{1mm}eps = 1e-6; \\ 
+\hspace{1mm}kMax = 200; \\ 
+\hspace{1mm} \\ 
+\hspace{1mm} \\ 
+\hspace{1mm}rosenbrock = @(x) Rosenbrock(x); \\ 
+\hspace{1mm} \\ 
+\hspace{1mm}x0 = [1.2; 1]; \\ 
+\hspace{1mm}[argmin\_r, k\_r] = globalNewton(rosenbrock,x0,rho,p,beta,sigma,eps,kMax); \\ 
+\hspace{1mm} \\ 
+\hspace{1mm} \\ 
+\hspace{1mm}brown = @(x) Brown(x); \\ 
+\hspace{1mm} \\ 
+\hspace{1mm}x0 = [1; 1]; \\ 
+\hspace{1mm}[argmin\_b k\_b] = globalNewton(brown,x0,rho,p,beta,sigma,eps,kMax) \\ 
+\hspace{1mm} \\ 
+\hspace{1mm}disp(\textcolor{red}{'Rosenbrock minimizer: '}); \\ 
+\hspace{1mm}\textcolor{green}{\%}\textcolor{green}{\% }\\ 
+\hspace{1mm}\textcolor{green}{\%  }\\ 
+\hspace{1mm} \\ 
+\hspace{1mm}\textcolor{green}{\%  }\\ 
+\hspace{1mm}disp(argmin\_r); \\ 
+\hspace{1mm}disp(\textcolor{red}{'Rosenbrock iterations: '}); \\ 
+\hspace{1mm}disp(k\_r);; \\ 
+\hspace{1mm}disp(\textcolor{red}{'Brown minimizer: '}); \\ 
+\hspace{1mm}disp(argmin\_b); \\ 
+\hspace{1mm}disp(\textcolor{red}{'Brown iterations: '}); \\ 
+\hspace{1mm}disp(k\_b); \\ 
+\hspace{1mm} \\ 
+\hspace{1mm} \\ 
+\hspace{1mm}\textcolor{green}{\%\$\$k\_b\$ }\\ 

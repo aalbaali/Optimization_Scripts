@@ -1,3 +1,4 @@
+%% The main script 
 %Amro Al Baali
 %Feb 9, 2018
 
@@ -8,7 +9,7 @@ home;
 iterationsTot = zeros(2,6);
 value1 = zeros(4,6);
 value2 = zeros(4,6);
-%% The function to be minimized
+% The function to be minimized
 for i=1:1:6;
     delta = 10^(-i);
     Q = eye(4);
@@ -19,7 +20,7 @@ for i=1:1:6;
 
 
     objFun = @(x) quadraticFunc(x,Q,c,gamma);
-    %% optimization criteria
+    % optimization criteria
     eps = 1e-5; %termination criteria
 
     x0 = 10*rand(4,1);
@@ -33,10 +34,10 @@ for i=1:1:6;
     iterationsTot(1,i) = iterations; 
     value1(:,i) = argmin;
     
-    [argmin iterations]= gradientMethod_Armijo_Function(objFun,x0,1e-5,0.5,1e-1);
+%     [argmin iterations]= gradientMethod_Armijo_Function(objFun,x0,1e-5,0.5,1e-1);
     
    
-    x0 = argmin;
+%     x0 = argmin;
 
     y0 = x0;
     y = y0;
@@ -47,8 +48,8 @@ for i=1:1:6;
     maxIterations = 10000;
 
     [fval, fgradX] = objFun(xOld);
-    disp('gradX');
-    disp(norm(fgradX));
+%     disp('gradX');
+%     disp(norm(fgradX));
     while (norm(fgradX)>1e-5)
         [fval, fgradY] = objFun(y);
         xNew = y -1/L*fgradY;
@@ -64,9 +65,9 @@ for i=1:1:6;
         end
     end
 
-    disp(k);
-    disp(xNew);
-    
+%     disp(k);
+%     disp(xNew);
+%     
 
    
    
@@ -77,67 +78,13 @@ for i=1:1:6;
    
 end
 
-%Amro AL Baali
-%Feb 9, 2018
-% f(x) = 1/2*x'Qx+c'x+gamma
-%fval is the function value while 
-%fgrad is the gradient value
-function [fval, fgrad] = quadraticFunc (x,Q,c,gamma)
-fval = 1/2*x'*Q*x+c'*x+gamma;
 
-fgrad = 1/2*Q*x+Q'*x+c;
-
-
-
-
-%Amro Al Baali
-%Feb 9, 2018
-%Consule Algorithm 3.2.1 from ECSE 507 Notes: Gradient method with Armijo
-%rule
-%The function must return the function value and a gradient.
-
-function [argmin, iterations] = gradientMethod_Armijo_Function(func,x0,sigma,beta, eps)
-if (nargin == 2)
-    sigma = 1e-5;
-    beta = 0.5;
-    eps = 1e-5;
-elseif (beta>=1 || beta<=0 || eps <=0)
-    disp('Wrong paramaters used beta should be Beta and sigma in (0,1), eps >0');
-end
-
-x = x0;
-k = 0;
-maxIteratins = 1e4;
-
-[fval fgrad] = func(x);
-
-while norm(fgrad) > eps
-    [fval fgrad] = func(x);
-    
-    d = -fgrad;
-    l = 0; %lower case L
-
-    t = 0;
-    while(func(x+beta.^l*d)>func(x)+beta^l*sigma*fgrad'*d)
-        l = l+1;
-    end
-
-    t = beta^l;
-    k = k+1;
-    x = x+t*d;
-    
-    if k == maxIterations
-        break;
-    end
+for i=1:6
+    delta=10^(-i);
+%     Q(4,4)=delta;
+%       [xopt_grad,it_grad]=gradq(Q,c,x0);
+%       [xopt_accgrad,it_accgrad]=accgradq(Q,c,x0);
+      fprintf('%4.6f || %9.0f | %1.0f  %1.0f  %1.0f  %14.6f|| %7.0f | %1.0f  %1.0f  %1.0f   %15.6f||\n', delta, iterationsTot(1,i), value1(1,i), value1(2,i), value1(3,i), value1(4,i), iterationsTot(2,i), value2(1,i), value2(2,i), value2(3,i), value2(4,i));
 
 end
-
-argmin = x;
-iterations = k;
-
-    
-    
-
-
-
 

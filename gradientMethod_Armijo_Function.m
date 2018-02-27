@@ -15,7 +15,7 @@ end
 
 x = x0;
 k = 0;
-maxIteratins = 1e4;
+maxIterations = 1e8;
 
 [fval fgrad] = func(x);
 
@@ -26,7 +26,7 @@ while norm(fgrad) > eps
     l = 0; %lower case L
 
     t = 0;
-    while(func(x+beta.^l*d)>func(x)+beta^l*sigma*fgrad'*d)
+    while(func(x+(beta^l)*d)>func(x)+(beta^l)*sigma*fgrad'*d)
         l = l+1;
     end
 
@@ -42,8 +42,3 @@ end
 
 argmin = x;
 iterations = k;
-
-    
-    
-
-
