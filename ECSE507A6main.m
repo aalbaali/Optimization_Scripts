@@ -7,7 +7,7 @@ close all;
 home;
 
 epsilon = 1e-6;
-sigma = 1e-4;
+sigma = 1e-1;
 rho = 0.9;
 
 gamma = 2;
