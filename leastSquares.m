@@ -1,11 +1,10 @@
+%% Least Squares
 function [val grad] = leastSquares(x, func, yList, tList)
 
 t = tList;
 y = yList;
 
-
 m = length(yList);
-
 
 x1 = x(1);
 x2 = x(2);
