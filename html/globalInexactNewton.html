@@ -1,0 +1,192 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>globalInexactNewton</title><meta name="generator" content="MATLAB 9.2"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2018-03-16"><meta name="DC.source" content="globalInexactNewton.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><pre class="codeinput"><span class="keyword">function</span> [argmin, iterations, minVal] = globalInexactNewton(func, x0, epsilon, rho, p, beta, sigma, c1, c2, maxIterations)
+<span class="keyword">if</span>(epsilon&lt;0 || rho &lt;= 0 || p &lt;=2 || beta &lt;= 0 || beta &gt;= 1 || sigma&lt;=0 || sigma &gt;=0.5)
+    disp(<span class="string">"Error with paramaters"</span>);
+    <span class="keyword">return</span>;
+<span class="keyword">end</span>
+argmin = NaN;
+iterations = NaN;
+minVal = NaN;
+
+x = x0;
+k = 0;
+
+<span class="keyword">if</span> (nargin &lt; 10)
+    maxIterations = 10000;
+<span class="keyword">end</span>
+
+
+[fVal fGrad fHess] = func(x);
+
+
+
+
+<span class="keyword">while</span> (norm(fGrad) &gt; epsilon)
+    <span class="comment">%use conjugate gradient method to solve for d</span>
+    <span class="comment">%if A is not symmetric positive definite then d = NaN;</span>
+    eta = min(c1/(k+1), c2*norm(fGrad));
+    d = CGforLinEqns(fHess, -fGrad, -fGrad, eta*norm(fGrad));
+    <span class="keyword">if</span>(size(d,1) ~= size(x0,1))
+<span class="comment">%         fprintf("CG not compatible for step k = %i. =&gt; Gradient method used\n",k);</span>
+<span class="comment">%         return;</span>
+    <span class="keyword">else</span>
+<span class="comment">%         fprintf("CG Compatible at k = %i\n",k);</span>
+    <span class="keyword">end</span>
+
+    <span class="keyword">if</span> ( any(isnan(d)) || fGrad'*d &gt; -rho*norm(d).^p)
+        d = -fGrad;
+    <span class="keyword">end</span>
+
+    <span class="comment">%determining tk</span>
+    l = 0; <span class="comment">%lower case L</span>
+    <span class="keyword">while</span>(func(x+(beta^l)*d) &gt; func(x) + sigma*beta^l*fGrad'*d)
+        l = l+1;
+    <span class="keyword">end</span>
+    t = beta^l;
+
+    x = x + t*d;
+
+    k = k + 1;
+
+    <span class="keyword">if</span> k == maxIterations
+        disp(<span class="string">"max iterations reached"</span>);
+        <span class="keyword">break</span>;
+    <span class="keyword">end</span>
+
+    [fVal fGrad fHess] = func(x);
+<span class="keyword">end</span>
+
+argmin = x;
+iterations = k;
+minVal = func(x);
+</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2017a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+function [argmin, iterations, minVal] = globalInexactNewton(func, x0, epsilon, rho, p, beta, sigma, c1, c2, maxIterations)
+if(epsilon<0 || rho <= 0 || p <=2 || beta <= 0 || beta >= 1 || sigma<=0 || sigma >=0.5)
+    disp("Error with paramaters");
+    return;
+end
+argmin = NaN;
+iterations = NaN;
+minVal = NaN;
+
+x = x0;
+k = 0;
+
+if (nargin < 10)
+    maxIterations = 10000;
+end
+
+
+[fVal fGrad fHess] = func(x);
+
+
+
+
+while (norm(fGrad) > epsilon)
+    %use conjugate gradient method to solve for d
+    %if A is not symmetric positive definite then d = NaN;    
+    eta = min(c1/(k+1), c2*norm(fGrad));
+    d = CGforLinEqns(fHess, -fGrad, -fGrad, eta*norm(fGrad));
+    if(size(d,1) ~= size(x0,1))
+%         fprintf("CG not compatible for step k = %i. => Gradient method used\n",k);
+%         return;
+    else
+%         fprintf("CG Compatible at k = %i\n",k);
+    end
+        
+    if ( any(isnan(d)) || fGrad'*d > -rho*norm(d).^p)
+        d = -fGrad;
+    end
+       
+    %determining tk
+    l = 0; %lower case L    
+    while(func(x+(beta^l)*d) > func(x) + sigma*beta^l*fGrad'*d)
+        l = l+1;
+    end
+    t = beta^l;    
+    
+    x = x + t*d;
+    
+    k = k + 1;
+    
+    if k == maxIterations
+        disp("max iterations reached");
+        break;
+    end      
+    
+    [fVal fGrad fHess] = func(x);
+end
+
+argmin = x;
+iterations = k;
+minVal = func(x);
+##### SOURCE END #####
+--></body></html>

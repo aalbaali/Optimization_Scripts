@@ -1,6 +1,15 @@
 %Globalized BFGS
 function [argmin iterations minval] = BFGSglobal(func, x0, H0, t0, sigma, rho,epsilon, gamma)
 
+if nargin == 2
+    H0 = eye(size(x0,1));
+    t0 = 1;
+    sigma = 1e-4;
+    rho =0.9;
+    epsilon = 1e-6;
+    gamma = 2;
+end
+    
 
 xOld = x0;
 [fval fgradOld] = func(xOld);

@@ -2,6 +2,15 @@
 
 function [argmin iterations minVal]= globalNewton (func, x0,rho,p,beta,sigma,eps, maxIterations)
 
+if nargin == 2
+    rho = 1e-8;
+    p = 2.1;
+    beta = 0.5;
+    sigma = 1e-4;
+    eps = 1e-6;
+    maxIterations = 200;
+end
+
 if (rho <=0 || p<=2 || beta>=1 || beta<=0 || sigma >= 0.5 || sigma <=0 ||eps<0)
     disp('One of the paramaters is not in the proper range');
     return;    

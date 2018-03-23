@@ -1,3 +1,4 @@
+%% CG for Linear Eqns
 function [x, iterations] = CGforLinEqns(A, b, x0, epsilon)
 % This only solves equations with A being symmetric and positive definite
 
@@ -7,15 +8,12 @@ x = NaN;
 iterations = NaN;
 
 if(m~=n || norm(A-A')> 1e-4 || any(eig(A)<= ones(size(A,1),1)*1e-4))
-    disp("A is not symmetric positive definite");
-   
+%     disp("A is not symmetric positive definite");   
     return;
 end
 
-
 x = x0;
 k = 0;
-
 
 gOld = A*x-b;
 d = -gOld;
@@ -39,7 +37,4 @@ while (norm(gOld) > epsilon)
         return;
     end
 end
-
-iterations = k;
-
-    
+iterations = k;   

@@ -6,9 +6,9 @@
 
 function [argmin, iterations] = gradientMethod_Armijo_Function(func,x0,sigma,beta, eps)
 if (nargin == 2)
-    sigma = 1e-5;
+    sigma = 1e-4;
     beta = 0.5;
-    eps = 1e-5;
+    eps = 1e-4;
 elseif (beta>=1 || beta<=0 || eps <=0)
     disp('Wrong paramaters used beta should be Beta and sigma in (0,1), eps >0');
 end
