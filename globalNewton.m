@@ -1,6 +1,9 @@
 % Implementing the globalized Newton method
 
-function [argmin iterations minVal]= globalNewton (func, x0,rho,p,beta,sigma,eps, maxIterations)
+function [argmin, iterations, minVal, xCell, fArr, fGradCell]= globalNewton (func, x0,rho,p,beta,sigma,eps, maxIterations)
+xCell = {};
+fArr = [];
+fGradCell = {};
 
 if nargin == 2
     rho = 1e-8;
@@ -20,10 +23,14 @@ x = x0;
 k = 0;
 
 [fVal fGrad fHess] = func(x);
-
+% xCell{end+1} = x;
+% fArr = [fArr;fVal];
 
 while norm(fGrad) > eps
     [fVal fGrad fHess] = func(x);
+    xCell{end+1} = x;
+    fArr = [fArr;fVal];
+    fGradCell{end+1} = fGrad;
     
     %if eqn solvable, use Newton, otherwise use gradient
     if (1/cond(fHess) > 1e-12)

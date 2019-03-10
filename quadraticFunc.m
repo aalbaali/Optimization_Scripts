@@ -5,11 +5,12 @@
 %fval is the function value while 
 %fgrad is the gradient value
 
-function [fval, fgrad] = quadraticFunc (x,Q,c,gamma)
-fval = 1/2*x'*Q*x+c'*x+gamma;
+function [fVal, fGrad, fHess] = quadraticFunc (x,Q,c,gamma)
+fVal = 1/2*x'*Q*x+c'*x+gamma;
 
-fgrad = 1/2*Q*x+1/2*Q'*x+c;
+fGrad = 1/2*Q*x+1/2*Q'*x+c;
 
+fHess = Q;
     
     
 

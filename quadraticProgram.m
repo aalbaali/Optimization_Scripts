@@ -4,14 +4,15 @@
 %     Uses linear solvers of choice.
 % 
 %     Basically solves [Q -A'; A  0] = [-c; b];
-function x = quadraticProgram(Q,c,A,b)
+function [qpSol, x, mu] = quadraticProgram(Q,c,A,b)
 if nargin == 2
     A = [];
     b = [];
 end
 
-xHat = [Q -A'; A zeros(size(A,1),size(A,1))]\[-c;b];
-x = xHat(1:size(Q,1));
+qpSol = [Q A'; A zeros(size(A,1),size(A,1))]\[-c;b];
+x = qpSol(1:size(Q,1));
+mu = qpSol(size(Q,1)+1,end);
 end
 
     
