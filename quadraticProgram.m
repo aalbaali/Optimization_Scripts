@@ -9,10 +9,14 @@ if nargin == 2
     A = [];
     b = [];
 end
+p = length(b);
 
 qpSol = [Q A'; A zeros(size(A,1),size(A,1))]\[-c;b];
 x = qpSol(1:size(Q,1));
-mu = qpSol(size(Q,1)+1,end);
+if (p > 0)
+    mu = qpSol(size(Q,1)+1:end);
+else
+    mu = NaN;
 end
 
     
