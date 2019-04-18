@@ -1,6 +1,7 @@
 %Globalized BFGS
-function [argmin iterations minval] = BFGSglobal(func, x0, H0, t0, sigma, rho,epsilon, gamma)
-
+function [argmin iterations minval fgrad xList] = BFGSglobal(func, x0, H0, t0, sigma, rho,epsilon, gamma)
+fgrad = [];
+xList = {};
 if nargin == 2
     H0 = eye(size(x0,1));
     t0 = 1;
@@ -16,6 +17,8 @@ xOld = x0;
 H = H0;
 k = 0;
 while(norm(fgradOld)>epsilon)
+    fgrad = [fgrad;norm(fgradOld)];
+    xList{end+1} = xOld;
     if (rem(k,100)==0)
         k;
     end
@@ -24,9 +27,17 @@ while(norm(fgradOld)>epsilon)
     
     t = Wolfe_Powll_rule(func, xOld, d, t0, gamma, rho, sigma);
 %     t = mb_nocLineSearch(func, xOld, d, t0, gamma, rho, sigma); %wolfe from online source
-    xNew = xOld + t*d;
-    s = xNew - xOld;    
+%     t = 1e-3;
+    xNew = xOld + t*d;    
    [fval fgradNew] = func(xNew);
+   
+%    % Recently added for the brachistochrone problem
+%    while norm(imag(fgradNew)) > epsilon
+%        t = 0.5*t;
+%        xNew = xOld + t*d;    
+%        [fval fgradNew] = func(xNew);
+%    end
+    s = xNew - xOld;    
     y = fgradNew - fgradOld;
     H = H + (y*y')/(y'*s)-(H*s*s'*H)/(s'*H*s);
     xOld = xNew;

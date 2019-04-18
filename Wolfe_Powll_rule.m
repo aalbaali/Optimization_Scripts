@@ -1,5 +1,18 @@
 %Implementation of Wolfe-Powell rule from Alg1 in A6.
 function [t] = Wolfe_Powll_rule(func, x, d, t0, gamma, rho, sigma)
+t = 1;
+if nargin  < 7
+    sigma = 1e-4;
+    if nargin < 6
+        rho = 0.9;
+        if nargin < 5
+            gamma = 2;
+            if nargin < 4
+                t0 = 1;
+            end
+        end
+    end
+end
 
 if (t0<=0 || gamma <=1)
     disp('error with the parameters');
@@ -9,7 +22,7 @@ end
 [fval1 fgrad1]=func(x);
 if(fgrad1'*d>=0)
     disp('error!!!');
-    return;
+%     return;
 end
 
 f = func;
@@ -24,8 +37,9 @@ ti = t0;
 % phi_dot_i = phi_dot(ti); %phi dot at t_i
 phi_dot0 = phi_dot(0); %phi dot at t = 0;
 i = 0;
+% while(1)
 while(1)
-    
+       
      if(rem(i,100)==0)
             i;
      end
